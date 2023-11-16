@@ -18,6 +18,32 @@ if(NOT CMAKE_CXX_FLAGS)
     set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -Wshadow -Wno-unknown-pragmas" CACHE STRING "Default flags" FORCE)
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+
+find_package(ClangFormat QUIET)
+
+if(CLANG_FORMAT_FOUND)
+    message(STATUS "clang-format: found ${CLANG_FORMAT_EXECUTABLE} v${CLANG_FORMAT_VERSION}")
+    message(STATUS "clang-format: adding custom target 'format'")
+    message(STATUS "clang-format: adding custom target 'format-fix'")
+    add_custom_target(format
+        COMMAND
+        ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run --Werror
+        "${CMAKE_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_SOURCE_DIR}/exec/*.cpp"
+        "${CMAKE_SOURCE_DIR}/bench/*.cpp"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    add_custom_target(format-fix
+        COMMAND
+        ${CLANG_FORMAT_EXECUTABLE} -style=file -i
+        "${CMAKE_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_SOURCE_DIR}/exec/*.cpp"
+        "${CMAKE_SOURCE_DIR}/bench/*.cpp"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 message(STATUS "")
 message(STATUS "Successfully configured ${PROJECT_NAME} v${PROJECT_VERSION}")
 message(STATUS "CMAKE_BUILD_TYPE        : ${CMAKE_BUILD_TYPE}")
