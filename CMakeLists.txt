@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 project("SVE Benchmark" VERSION 0.1)
 
@@ -19,6 +19,18 @@ if(NOT CMAKE_CXX_FLAGS)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/")
+
+include(cmake/modules/CPM.cmake)
+
+option(DOWNLOAD_DEPS "Download dependencies via external sources. If disabled, dependencies must be provided via find_package machinery." ON)
+
+set(GBENCHMARK_VERSION "1.8.3" CACHE STRING "Google benchmark version")
+CPMAddPackage(
+    NAME benchmark
+    GITHUB_REPOSITORY google/benchmark
+    VERSION ${GBENCHMARK_VERSION}
+    OPTIONS "BENCHMARK_ENABLE_TESTING Off"
+)
 
 find_package(ClangFormat QUIET)
 
@@ -46,10 +58,11 @@ endif()
 
 message(STATUS "")
 message(STATUS "Successfully configured ${PROJECT_NAME} v${PROJECT_VERSION}")
-message(STATUS "CMAKE_BUILD_TYPE        : ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_BUILD_TYPE         : ${CMAKE_BUILD_TYPE}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    message(STATUS "CMAKE_CXX_FLAGS_RELEASE : ${CMAKE_CXX_FLAGS_RELEASE}")
+    message(STATUS "CMAKE_CXX_FLAGS_RELEASE  : ${CMAKE_CXX_FLAGS_RELEASE}")
 endif()
 
+message(STATUS "Google Benchmark version : ${GBENCHMARK_VERSION}")
 message(STATUS "")
