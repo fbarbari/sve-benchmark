@@ -77,6 +77,6 @@ static void BM_MatMul_Hwy(benchmark::State& state) {
     }
 }
 
-BENCHMARK(BM_MatMul_NoOpt)->Arg(1 << 10);
-BENCHMARK(BM_MatMul_AutoVec)->Arg(1 << 10);
-BENCHMARK(BM_MatMul_Hwy)->Arg(1 << 10);
+BENCHMARK(BM_MatMul_NoOpt)->Arg(1 << 9);
+BENCHMARK(BM_MatMul_AutoVec)->Arg(1 << 9);
+BENCHMARK(BM_MatMul_Hwy)->Arg(1 << 9);
