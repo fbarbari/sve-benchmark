@@ -22,14 +22,20 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mo
 
 include(cmake/modules/CPM.cmake)
 
-option(DOWNLOAD_DEPS "Download dependencies via external sources. If disabled, dependencies must be provided via find_package machinery." ON)
-
-set(GBENCHMARK_VERSION "1.8.3" CACHE STRING "Google benchmark version")
+set(GBENCHMARK_VERSION "1.8.3" CACHE STRING "Google Benchmark version")
 CPMAddPackage(
     NAME benchmark
     GITHUB_REPOSITORY google/benchmark
     VERSION ${GBENCHMARK_VERSION}
     OPTIONS "BENCHMARK_ENABLE_TESTING Off"
+)
+
+set(HIGHWAY_VERSION "1.0.7" CACHE STRING "Google Highway version")
+CPMAddPackage(
+    NAME highway
+    GITHUB_REPOSITORY google/highway
+    GIT_TAG "${HIGHWAY_VERSION}"
+    VERSION ${HIGHWAY_VERSION}
 )
 
 find_package(ClangFormat QUIET)
@@ -65,4 +71,5 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 message(STATUS "Google Benchmark version : ${GBENCHMARK_VERSION}")
+message(STATUS "Google Highway version   : ${HIGHWAY_VERSION}")
 message(STATUS "")
