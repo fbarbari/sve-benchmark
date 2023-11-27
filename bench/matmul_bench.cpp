@@ -19,7 +19,7 @@ static void init_matmul(std::vector<T> a, std::vector<T> b, std::vector<T> c) {
 
     std::generate(a.begin(), a.end(), [&dist, &rnd]() { return dist(rnd); });
     std::generate(b.begin(), b.end(), [&dist, &rnd]() { return dist(rnd); });
-    std::fill(c.begin(), c.end(), 0.0);
+    std::fill(c.begin(), c.end(), static_cast<T>(0));
 }
 
 template <typename T>

@@ -41,7 +41,8 @@ CPMAddPackage(
 
 add_executable(sve-bench
     "${CMAKE_SOURCE_DIR}/bench/main.cpp"
-    "${CMAKE_SOURCE_DIR}/bench/matmul_bench.cpp")
+    "${CMAKE_SOURCE_DIR}/bench/matmul_bench.cpp"
+    "${CMAKE_SOURCE_DIR}/bench/rmsd_bench.cpp")
 target_include_directories(sve-bench PUBLIC "${CMAKE_SOURCE_DIR}/include/")
 target_link_libraries(sve-bench hwy benchmark::benchmark benchmark::benchmark_main)
 add_dependencies(sve-bench hwy_list_targets)
