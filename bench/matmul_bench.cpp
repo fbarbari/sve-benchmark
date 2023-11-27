@@ -12,22 +12,24 @@
 #error "unknown compiler"
 #endif
 
-static void init_matmul(std::vector<double> a, std::vector<double> b, std::vector<double> c) {
+template <typename T>
+static void init_matmul(std::vector<T> a, std::vector<T> b, std::vector<T> c) {
     std::mt19937 rnd{std::random_device{}()};
-    std::uniform_real_distribution<double> dist{-100.0, 100.0};
+    std::uniform_real_distribution<T> dist{static_cast<T>(-100), static_cast<T>(100)};
 
     std::generate(a.begin(), a.end(), [&dist, &rnd]() { return dist(rnd); });
     std::generate(b.begin(), b.end(), [&dist, &rnd]() { return dist(rnd); });
     std::fill(c.begin(), c.end(), 0.0);
 }
 
+template <typename T>
 __attribute(DO_NOT_OPTIMIZE) static void BM_MatMul_NoOpt(benchmark::State& state) {
     const size_t m = state.range(0);
     const size_t n = state.range(0);
     const size_t k = state.range(0);
-    std::vector<double> a(m * n);
-    std::vector<double> b(n * k);
-    std::vector<double> c(m * k);
+    std::vector<T> a(m * n);
+    std::vector<T> b(n * k);
+    std::vector<T> c(m * k);
 
     for (auto _ : state) {
         init_matmul(a, b, c);
@@ -47,13 +49,14 @@ __attribute(DO_NOT_OPTIMIZE) static void BM_MatMul_NoOpt(benchmark::State& state
     }
 }
 
+template <typename T>
 static void BM_MatMul_AutoVec(benchmark::State& state) {
     const size_t m = state.range(0);
     const size_t n = state.range(0);
     const size_t k = state.range(0);
-    std::vector<double> a(m * n);
-    std::vector<double> b(n * k);
-    std::vector<double> c(m * k);
+    std::vector<T> a(m * n);
+    std::vector<T> b(n * k);
+    std::vector<T> c(m * k);
 
     for (auto _ : state) {
         init_matmul(a, b, c);
@@ -73,13 +76,14 @@ static void BM_MatMul_AutoVec(benchmark::State& state) {
     }
 }
 
+template <typename T>
 static void BM_MatMul_Hwy(benchmark::State& state) {
     const size_t m = state.range(0);
     const size_t n = state.range(0);
     const size_t k = state.range(0);
-    std::vector<double> a(m * n);
-    std::vector<double> b(n * k);
-    std::vector<double> c(m * k);
+    std::vector<T> a(m * n);
+    std::vector<T> b(n * k);
+    std::vector<T> c(m * k);
 
     for (auto _ : state) {
         init_matmul(a, b, c);
@@ -99,6 +103,9 @@ static void BM_MatMul_Hwy(benchmark::State& state) {
     }
 }
 
-BENCHMARK(BM_MatMul_NoOpt)->Arg(1 << 9)->UseManualTime();
-BENCHMARK(BM_MatMul_AutoVec)->Arg(1 << 9)->UseManualTime();
-BENCHMARK(BM_MatMul_Hwy)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_NoOpt<float>)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_NoOpt<double>)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_AutoVec<float>)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_AutoVec<double>)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_Hwy<float>)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_Hwy<double>)->Arg(1 << 9)->UseManualTime();
