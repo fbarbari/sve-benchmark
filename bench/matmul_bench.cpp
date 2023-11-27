@@ -1,3 +1,4 @@
+#include <chrono>
 #include <random>
 #include <vector>
 #include <benchmark/benchmark.h>
@@ -28,14 +29,21 @@ __attribute(DO_NOT_OPTIMIZE) static void BM_MatMul_NoOpt(benchmark::State& state
     std::vector<double> b(n * k);
     std::vector<double> c(m * k);
 
-    init_matmul(a, b, c);
-
     for (auto _ : state) {
+        init_matmul(a, b, c);
+        const auto start = std::chrono::high_resolution_clock::now();
+
         matmul::matmul(a.data(), b.data(), c.data(), m, n, k);
         benchmark::DoNotOptimize(a);
         benchmark::DoNotOptimize(b);
         benchmark::DoNotOptimize(c);
         benchmark::ClobberMemory();
+
+        const auto end = std::chrono::high_resolution_clock::now();
+        const auto elapsed_seconds =
+            std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+
+        state.SetIterationTime(elapsed_seconds.count());
     }
 }
 
@@ -47,14 +55,21 @@ static void BM_MatMul_AutoVec(benchmark::State& state) {
     std::vector<double> b(n * k);
     std::vector<double> c(m * k);
 
-    init_matmul(a, b, c);
-
     for (auto _ : state) {
+        init_matmul(a, b, c);
+        const auto start = std::chrono::high_resolution_clock::now();
+
         matmul::matmul(a.data(), b.data(), c.data(), m, n, k);
         benchmark::DoNotOptimize(a);
         benchmark::DoNotOptimize(b);
         benchmark::DoNotOptimize(c);
         benchmark::ClobberMemory();
+
+        const auto end = std::chrono::high_resolution_clock::now();
+        const auto elapsed_seconds =
+            std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+
+        state.SetIterationTime(elapsed_seconds.count());
     }
 }
 
@@ -66,17 +81,24 @@ static void BM_MatMul_Hwy(benchmark::State& state) {
     std::vector<double> b(n * k);
     std::vector<double> c(m * k);
 
-    init_matmul(a, b, c);
-
     for (auto _ : state) {
+        init_matmul(a, b, c);
+        const auto start = std::chrono::high_resolution_clock::now();
+
         matmul::matmul_hwy(a.data(), b.data(), c.data(), m, n, k);
         benchmark::DoNotOptimize(a);
         benchmark::DoNotOptimize(b);
         benchmark::DoNotOptimize(c);
         benchmark::ClobberMemory();
+
+        const auto end = std::chrono::high_resolution_clock::now();
+        const auto elapsed_seconds =
+            std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
+
+        state.SetIterationTime(elapsed_seconds.count());
     }
 }
 
-BENCHMARK(BM_MatMul_NoOpt)->Arg(1 << 9);
-BENCHMARK(BM_MatMul_AutoVec)->Arg(1 << 9);
-BENCHMARK(BM_MatMul_Hwy)->Arg(1 << 9);
+BENCHMARK(BM_MatMul_NoOpt)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_AutoVec)->Arg(1 << 9)->UseManualTime();
+BENCHMARK(BM_MatMul_Hwy)->Arg(1 << 9)->UseManualTime();
